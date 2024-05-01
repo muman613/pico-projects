@@ -13,3 +13,11 @@ project(myproject)
 pico_sdk_init()
 
 add_subdirectory(project0)
+add_subdirectory(led_fade)
+
+add_subdirectory(hello_uart)
+add_subdirectory(bus_scan)
+add_subdirectory(wifi-scan)
+add_subdirectory(button-gp20)
+add_subdirectory(freertos-blinky)
+add_subdirectory(buzzer-gp18)

@@ -11,5 +11,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/sou
 # pico_enable_stdio_uart(project0 1)
 pico_enable_stdio_usb(${PROJECT_NAME} ENABLED)
 
-target_link_libraries(${PROJECT_NAME} pico_stdlib pico_cyw43_arch_none hardware_i2c FreeRTOS-Kernel FreeRTOS-Kernel-Heap4)
+add_compile_definitions(CYW43_HOST_NAME="PICO-W")
+
+target_link_libraries(${PROJECT_NAME} pico_stdlib pico_cyw43_arch_lwip_threadsafe_background hardware_i2c FreeRTOS-Kernel FreeRTOS-Kernel-Heap4)
 pico_add_extra_outputs(${PROJECT_NAME})

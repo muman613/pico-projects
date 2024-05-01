@@ -2,7 +2,6 @@ project(project0 C CXX ASM)
 
 # set(CMAKE_C_STANDARD 11)
 # set(CMAKE_CXX_STANDARD 17)
-
 # pico_sdk_init()
 add_executable(project0
         source/main.cpp
