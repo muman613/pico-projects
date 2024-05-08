@@ -40,6 +40,8 @@
 
 #include <stdio.h>
 
+#include "pwm-utils.h"
+
 #define WIFI_TASK 1
 #define SSID "softwaremagic"
 #define PASSWORD "realmagic"
