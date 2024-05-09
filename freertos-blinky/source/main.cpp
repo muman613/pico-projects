@@ -35,12 +35,15 @@
 
 /* Library includes. */
 #include "hardware/i2c.h"
+#include "hardware/pwm.h"
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
 
 #include <stdio.h>
 
+extern "C" {
 #include "pwm-utils.h"
+}
 
 #define WIFI_TASK 1
 #define SSID "softwaremagic"
@@ -52,6 +55,11 @@
 TaskHandle_t blink_task_handle = NULL, button_task_handle = NULL, wifi_task_handle = NULL;
 QueueHandle_t event_queue = NULL;
 TimerHandle_t event_timer = NULL;
+
+// pwm parameters
+uint slice_num = 0;
+uint chan18 = 0;
+uint wrap = 0;
 
 struct event {
     uint8_t eventCode;
@@ -96,10 +104,14 @@ void button_task(void *arg) {
         event ev;
         if (xQueueReceive(event_queue, &ev, portMAX_DELAY) == pdPASS) {
             if (ev.eventCode == EVENT_BUTTONDOWN) {
+                pwm_set_enabled(slice_num, true);
+
                 buttonDownTicks = xTaskGetTickCount();
                 printf("Button down\n");
                 ms_delay = 100 / portTICK_PERIOD_MS;
             } else if (ev.eventCode == EVENT_BUTTONUP) {
+                pwm_set_enabled(slice_num, false);
+
                 buttonUpTicks = xTaskGetTickCount();
                 printf("Button up : ticks = %f\n", (double)(buttonUpTicks - buttonDownTicks) / 1000);
                 ms_delay = 500 / portTICK_PERIOD_MS;
@@ -214,10 +226,15 @@ static void prvSetupHardware(void) {
     gpio_pull_up(BUTTON_PIN); // Enable internal pull-up
 
     gpio_init(BUZZER_PIN);
-    gpio_set_dir(BUZZER_PIN, GPIO_OUT);
+    gpio_set_function(BUZZER_PIN, GPIO_FUNC_PWM);
 
     // Set up the interrupt handler for the specified pin
     gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+
+    slice_num = pwm_gpio_to_slice_num(BUZZER_PIN);
+    chan18 = pwm_gpio_to_channel(BUZZER_PIN);
+    wrap = pwm_set_freq_duty(slice_num, chan18, 300, 50);
+    pwm_set_duty(slice_num, chan18, 25);
 }
 
 /*-----------------------------------------------------------*/
