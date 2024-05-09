@@ -41,9 +41,7 @@
 
 #include <stdio.h>
 
-extern "C" {
 #include "pwm-utils.h"
-}
 
 #define WIFI_TASK 1
 #define SSID "softwaremagic"
